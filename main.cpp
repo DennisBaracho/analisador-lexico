@@ -5,57 +5,52 @@
 #include <stdexcept>
 
 namespace Constantes {
-    enum class Token { NUM, ABCOL, ABPAR, ABCHA, FECOL, FEPAR, FECHA, OP, VAR, END_OF_FILE, PTOVIRG};
+    enum class Token { NUM, ABCOL, ABPAR, ABCHA, FECOL, FEPAR, FECHA, OP, VAR, END_OF_FILE };
 
-// Função auxiliar para imprimir os tokens (já que C++ não imprime enums como strings nativamente)
-std::string tokenToString(Token t) {
-    switch(t) {
-        case Token::NUM: return "NUM";
-        case Token::ABCOL: return "ABCOL";
-        case Token::ABPAR: return "ABPAR";
-        case Token::ABCHA: return "ABCHA";
-        case Token::FECOL: return "FECOL";
-        case Token::FEPAR: return "FEPAR";
-        case Token::FECHA: return "FECHA";
-        case Token::VAR: return "VAR";
-        case Token::OP: return "OP";
-        case Token::END_OF_FILE: return "EOF";
-        default: return "UNKNOWN";
+    std::string tokenToString(Token t) {
+        switch(t) {
+            case Token::NUM: return "NUM";
+            case Token::ABCOL: return "ABCOL";
+            case Token::ABPAR: return "ABPAR";
+            case Token::ABCHA: return "ABCHA";
+            case Token::FECOL: return "FECOL";
+            case Token::FEPAR: return "FEPAR";
+            case Token::FECHA: return "FECHA";
+            case Token::VAR: return "VAR";
+            case Token::OP: return "OP";
+            case Token::END_OF_FILE: return "EOF";
+            default: return "UNKNOWN";
+        }
     }
-}
-//C++ tem enum, tem q fazer manualmente e é isso que a função acima faz 
 
-const std::string DIGITOS = "0123456789";
-const std::string LETRAS_MIN = "abcdefghijklmnopqrstuvwxyz";
-const std::string LETRAS_MAI = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const std::string OPERADORES = "+-*/";
-const std::string VAZIOS = " \r\n\t";
+    const std::string DIGITOS = "0123456789";
+    const std::string LETRAS_MIN = "abcdefghijklmnopqrstuvwxyz";
+    const std::string LETRAS_MAI = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const std::string OPERADORES = "+-*/";
+    const std::string VAZIOS = " \r\n\t";
 
-const char EOF_CHAR = 0;
-const char ABPAR = '(';
-const char FEPAR = ')';
-const char ABCHA = '{';
-const char FECHA = '}';
-const char ABCOL = '[';
-const char FECOL = ']';
-const char UNDER = '_';
+    const char EOF_CHAR = 0;
+    const char ABPAR = '(';
+    const char FEPAR = ')';
+    const char ABCHA = '{';
+    const char FECHA = '}';
+    const char ABCOL = '[';
+    const char FECOL = ']';
+    const char UNDER = '_';
 
-const std::string NOME_DEFAULT_ARQUIVO_ENTRADA = "entrada.txt";
+    const std::string NOME_DEFAULT_ARQUIVO_ENTRADA = "entrada.txt";
 }
 
 class ErroLexico : public std::runtime_error {
 private:
     std::string msg;
 public:
-    // testa o caractere digitado pelo usuario, caso nao esteja de acordo com os consts esperados retorna erro le
     ErroLexico(char caractereEncontrado, const std::string& caracteresEsperados)
         : std::runtime_error("Erro lexico") {
-        // mensagem de erro a ser enviada
         msg = "caractere encontrado: " + std::string(1, caractereEncontrado) +
               "\nera(m) esperado(s): " + caracteresEsperados;
     }
     
-    // metodo que retorna a mensagem de erro, convertendo-a para strin
     const char* what() const noexcept override {
         return msg.c_str();
     }
@@ -65,10 +60,7 @@ class Analisador {
 protected:
     std::string nomeArquivoEntrada;
 public:
-   //construtor principal,  
-   // : nomearquivoEntrada(_nomeArquivoEntrada) equivale a this.nomeArquivoEntrada = _nomeArquivoEntrada;
     Analisador(std::string _nomeArquivoEntrada) : nomeArquivoEntrada(_nomeArquivoEntrada) {} 
-   //construtor para caso erre o nome, Se você esquecer de passar um nome de arquivo, ele não dá erro. Ele simplesmente vai lá no nosso namespace Constantes e pega o nome padrão (que é "entrada.txt") para usar.
     Analisador() : nomeArquivoEntrada(Constantes::NOME_DEFAULT_ARQUIVO_ENTRADA) {}
     std::string getNomeArquivoEntrada() const {
         return nomeArquivoEntrada;
@@ -89,7 +81,6 @@ public:
             throw std::runtime_error("Erro de leitura no arquivo " + nomeArquivoEntrada);
         }
         
-        // Transfere o arquivo para o buffer 'entrada'
         std::stringstream buffer;
         buffer << file.rdbuf();
         entrada = buffer.str();
@@ -114,7 +105,6 @@ public:
 class MyAnalisadorLexico : public AnalisadorLexico {
 public:
     MyAnalisadorLexico(std::string _nomeArquivoEntrada) : AnalisadorLexico(_nomeArquivoEntrada) {}
-//proxCaractereis() é para string ou grupo, proxCaractere == é para caractere ou algo solo.
     void s0() {
         
         if (proxCaractereIs(Constantes::DIGITOS)) {
@@ -232,10 +222,6 @@ public:
     }
 };
 
-
-// ==========================================
-// Teste do Analisador Léxico (main)
-// ==========================================
 int main(int argc, char* argv[]) {
     if (argc != 2) {
         std::cerr << "Erro: esqueceu de escrever o nome do arquivo de entrada!" << std::endl;
